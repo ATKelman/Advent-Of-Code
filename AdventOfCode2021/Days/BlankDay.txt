@@ -1,0 +1,16 @@
+﻿    public class Day : DayBase
+    {
+        public Day(int day)
+            : base(day)
+        { }
+
+        public override string SolvePart1()
+        {
+            return "";
+        }
+
+        public override string SolvePart2()
+        {
+            return "";
+        }
+    }
