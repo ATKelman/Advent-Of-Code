@@ -41,7 +41,28 @@ namespace AdventOfCode2021.Days
 
         public override string SolvePart2()
         {
-            return "";
+            long sum = 0;
+            File.ReadAllText(_inputPath)
+               .Split(",")
+               .Select(int.Parse)
+               .ToList()
+               .GroupBy(x => x)
+               .Select(x=> new { value = x.Key, count = x.Count() })
+               .ToList()
+               .ForEach(x => 
+               {
+                   sum += (x.count * Solve(x.value, 256));
+               }); 
+
+            return sum.ToString();
+        }
+
+        private long Solve(int current, int days)
+        {
+            if ((days - current) <= 0)
+                return 0;
+
+            return 1 + Solve(6, days - current - 1) + Solve(8, days - current - 1);
         }
     }
 }
