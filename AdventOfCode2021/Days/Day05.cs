@@ -28,22 +28,12 @@ namespace AdventOfCode2021.Days
                 var instance = input[i]
                     .Select(x => int.Parse(x.Value))
                     .ToList();
-
-                int increment = 1;
-                int idToChange = 0;
-
+              
                 if (instance[0] != instance[2] && instance[1] != instance[3])
                     continue;
 
-                if (instance[0] != instance[2])
-                {
-                    if (instance[0] > instance[2]) increment = -1;
-                }
-                else
-                {
-                    idToChange = 1;
-                    if (instance[1] > instance[3]) increment = -1;
-                }
+                int idToChange = (instance[0] != instance[2]) ? 0 : 1;
+                int increment = (instance[idToChange] > instance[idToChange + 2]) ? -1 : 1;
 
                 if (!map.TryAdd((instance[0], instance[1]), 1))
                     map[(instance[0], instance[1])]++;
@@ -77,31 +67,37 @@ namespace AdventOfCode2021.Days
                     .Select(x => int.Parse(x.Value))
                     .ToList();
 
-                int increment = 1;
-                int idToChange = 0;
-
                 if (instance[0] != instance[2] && instance[1] != instance[3])
-                    continue;
-
-                if (instance[0] != instance[2])
                 {
-                    if (instance[0] > instance[2]) increment = -1;
+                    var incrementX = (instance[0] > instance[2]) ? -1 : 1;
+                    var incrementY = (instance[1] > instance[3]) ? -1 : 1;
+
+                    if (!map.TryAdd((instance[0], instance[1]), 1))
+                        map[(instance[0], instance[1])]++;
+
+                    while (instance[0] != instance[2] || instance[1] != instance[3])
+                    {
+                        instance[0] += incrementX;
+                        instance[1] += incrementY;
+                        if (!map.TryAdd((instance[0], instance[1]), 1))
+                            map[(instance[0], instance[1])]++;
+                    }
                 }
                 else
                 {
-                    idToChange = 1;
-                    if (instance[1] > instance[3]) increment = -1;
-                }
+                    int idToChange = (instance[0] != instance[2]) ? 0 : 1;
+                    int increment = (instance[idToChange] > instance[idToChange + 2]) ? -1 : 1;
 
-                if (!map.TryAdd((instance[0], instance[1]), 1))
-                    map[(instance[0], instance[1])]++;
-
-                while (instance[0] != instance[2] || instance[1] != instance[3])
-                {
-                    instance[idToChange] += increment;
                     if (!map.TryAdd((instance[0], instance[1]), 1))
                         map[(instance[0], instance[1])]++;
-                }
+
+                    while (instance[0] != instance[2] || instance[1] != instance[3])
+                    {
+                        instance[idToChange] += increment;
+                        if (!map.TryAdd((instance[0], instance[1]), 1))
+                            map[(instance[0], instance[1])]++;
+                    }
+                }           
             }
 
             return map
