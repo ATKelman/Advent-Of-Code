@@ -61,7 +61,6 @@ namespace AdventOfCode2021.Days
                     .Aggregate((x, y) => x + y);
 
                 result += int.Parse(output);
-
             }
 
             return result.ToString();
