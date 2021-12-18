@@ -9,7 +9,7 @@ namespace AdventOfCode2021
         {
             Console.WriteLine("Advent of Code 2021");
 
-            var day = new Day11(11);
+            var day = new Day12(12);
 
             var result = day.SolvePart1();
 
