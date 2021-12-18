@@ -53,7 +53,42 @@ namespace AdventOfCode2021.Days
 
         public override string SolvePart2()
         {
-            return "";
+            List<Octopus> octopi = new();
+
+            File
+                .ReadAllLines(_inputPath)
+                .Select((x, n) =>
+                new {
+                    value = x
+                        .ToArray()
+                        .Select((y, i) => new { value = int.Parse(y.ToString()), Index = i })
+                        .ToList(),
+                    Index = n
+                })
+                .ToList()
+                .ForEach(x =>
+                {
+                    x.value.ForEach(y =>
+                    {
+                        octopi.Add(new Octopus(x.Index, y.Index, y.value));
+                    });
+                });
+
+            octopi.ForEach(x => x.FindNeighbours(octopi));
+
+            int i = 1;
+            while(true)
+            {
+                octopi.ForEach(x => x.Increase(i));
+                octopi
+                    .Where(x => x.StepsWithFlash.Contains(i))
+                    .ToList()
+                    .ForEach(x => x.Energy = 0);
+
+                if (octopi.All(x => x.StepsWithFlash.Contains(i))) return i.ToString();
+
+                i++;
+            }
         }
     }
 
