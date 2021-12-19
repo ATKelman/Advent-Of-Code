@@ -56,7 +56,7 @@ namespace AdventOfCode2021.Days
                 .Select(x => new
                 {
                     Character = x.Key,
-                    Count = x.Count()
+                    Count = (long)x.Count()
                 })
                 .ToList();
 
@@ -68,7 +68,71 @@ namespace AdventOfCode2021.Days
 
         public override string SolvePart2()
         {
-            return "";
+            var input = File
+                .ReadAllLines(_inputPath)
+                .ToList();
+
+            Dictionary<string, string> insertions = new();
+
+            input
+                .Where(x => x.Contains("->"))
+                .Select(x => x.Split(" -> ", StringSplitOptions.RemoveEmptyEntries))
+                .ToList()
+                .ForEach(x =>
+                {
+                    insertions.Add(x[0], x[1]);
+                });
+
+            var template = input.First();
+
+            Dictionary<string, long> pairs = new();
+            _ = template.Aggregate((current, next) =>
+            {
+                if (!pairs.ContainsKey($"{current}{next}"))
+                    pairs.Add($"{current}{next}", 0);
+                pairs[$"{current}{next}"]++;
+                return next;
+            });
+
+            for (int i = 0; i < 40; i++)
+            {
+                Dictionary<string, long> temp = new();
+                foreach (var pair in pairs)
+                {
+                    if (!temp.ContainsKey($"{pair.Key[0]}{insertions[pair.Key]}"))
+                        temp.Add($"{pair.Key[0]}{insertions[pair.Key]}", 0);
+                    if (!temp.ContainsKey($"{insertions[pair.Key]}{pair.Key[1]}"))
+                        temp.Add($"{insertions[pair.Key]}{pair.Key[1]}", 0);
+
+                    temp[$"{pair.Key[0]}{insertions[pair.Key]}"] += pair.Value;
+                    temp[$"{insertions[pair.Key]}{pair.Key[1]}"] += pair.Value;
+                }
+
+                pairs = temp;
+            }
+
+            Dictionary<char, long> count = new();
+            foreach (var pair in pairs)
+            {
+                if (!count.ContainsKey(pair.Key[0]))
+                    count.Add(pair.Key[0], 0);
+                if (!count.ContainsKey(pair.Key[1]))
+                    count.Add(pair.Key[1], 0);
+
+                count[pair.Key[0]] += pair.Value;
+                count[pair.Key[1]] += pair.Value;
+            }
+
+            foreach (var item in count.Keys.ToList())
+            {
+                if (item == template.First() || item == template.Last())
+                    count[item] = (count[item] + 1) / 2; // Last and first value are in 1 less pair 
+                else
+                    count[item] = count[item] / 2; // Divide by 2 as every character is doubled || counted twice as in both of its pairs
+            }
+
+
+            return (count.Max(x => x.Value) - count.Min(x => x.Value)).ToString();
         }
     }
 }
