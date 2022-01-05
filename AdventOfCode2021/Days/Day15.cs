@@ -13,7 +13,7 @@ namespace AdventOfCode2021.Days
             : base(day)
         { }
 
-        
+
 
         public override string SolvePart1()
         {
@@ -27,7 +27,7 @@ namespace AdventOfCode2021.Days
         {
             var dim = enlarge ? 5 : 1;
             var yMax = input.Length * dim - 1;
-            var xMax = input[0].Length *  dim - 1;
+            var xMax = input[0].Length * dim - 1;
 
             var shortestPath = new List<Path>() { new Path((0, 0)) };
             var visited = new Dictionary<(int x, int y), int> { { (0, 0), 0 } };
@@ -89,21 +89,22 @@ namespace AdventOfCode2021.Days
             return Solve(input, true).ToString();
         }
 
-    public class Path
-    {
-        public (int x, int y) Last { get; set; }
-        public int Risk { get; set; }
-
-        public Path((int x, int y) last)
+        public class Path
         {
-            Last = last;
-            Risk = 0;
-        }
+            public (int x, int y) Last { get; set; }
+            public int Risk { get; set; }
 
-        public Path(Path source, (int x, int y) last, int addRisk)
-        {
-            Last = last;
-            Risk = source.Risk + addRisk;
+            public Path((int x, int y) last)
+            {
+                Last = last;
+                Risk = 0;
+            }
+
+            public Path(Path source, (int x, int y) last, int addRisk)
+            {
+                Last = last;
+                Risk = source.Risk + addRisk;
+            }
         }
     }
 }
