@@ -37,7 +37,37 @@ namespace AdventOfCode2021.Days
                 .Select(x => int.Parse(x))
                 .ToArray();
 
-            return "";
+            List<(int xvel, int yvel)> validVelocities = new();
+
+            for (int x = 0; x <= input[1]; x++)
+            {
+                for (int y = Math.Abs(input[2]); y >= input[2]; y--)
+                {
+                    (int velX, int velY) velocity = (x, y);
+                    (int posX, int posY) position = (0, 0);
+                    
+                    while (position.posX <= input[1] && position.posY >= input[2])
+                    {
+                        position.posX += velocity.velX;
+                        position.posY += velocity.velY;
+
+                        if (velocity.velX > 0)
+                            velocity.velX--;
+
+                        velocity.velY--;
+
+                        if (position.posX >= input[0] && position.posX <= input[1]
+                            && position.posY >= input[2] && position.posY <= input[3])
+                        {
+                            validVelocities.Add((x, y));
+                            break;
+                        }
+
+                    }
+                }
+            }
+
+            return validVelocities.Count.ToString();
         }
     }
 }
