@@ -40,13 +40,15 @@ namespace AdventOfCode2022.Days
                 .ToList()
                 .ForEach(x =>
                 {
+                    // X = 1, Y = 2, C = 3
                     var gameResult = x[2] - 87;
                     // X = 0 (Lose), Y = 3 (Draw), Z = 6 (Win)
                     result += ((gameResult + 2) % 3) * 3;
-                    var theirPickValue = x[0] - 64;
-                    // x[2] - 87 to get the correct decimal value
-                    // + 1 then so that X % 3 = 2, Y % 3 = 0, Z % 3 = 1
-                    var myPick = (theirPickValue + ((x[2] - 87 + 1) % 3));
+                    // A = 1, B = 2, C = 3
+                    var theirPick = x[0] - 64;
+                    // Increase gameResult by 1 so that the change from theirPick to yours is the following:
+                    // X % 3 = 2, Y % 3 = 0, Z % 3 = 1
+                    var myPick = (theirPick + ((gameResult + 1) % 3));
                     result += (myPick > 3) ? myPick - 3 : myPick;
                 });
 
