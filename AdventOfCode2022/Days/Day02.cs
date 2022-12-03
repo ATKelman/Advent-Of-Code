@@ -26,7 +26,7 @@ namespace AdventOfCode2022.Days
 
                     if (theirPick == myPick)
                         result += 3;
-                    else if ((theirPick + 1) % 3 == (myPick + 3) % 3)
+                    else if ((theirPick + 1) % 3 == myPick % 3)
                         result += 6;
                 });
 
