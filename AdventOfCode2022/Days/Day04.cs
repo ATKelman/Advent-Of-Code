@@ -29,8 +29,9 @@ namespace AdventOfCode2022.Days
                         })
                         .ToList();
 
-                    if (elves[0].Intersect(elves[1]).Count() == elves[1].Count()
-                        || elves[1].Intersect(elves[0]).Count() == elves[0].Count()) 
+                    var intersects = elves[0].Intersect(elves[1]).Count();
+
+                    if (intersects == elves[0].Count() || intersects == elves[1].Count())
                         totalOverlaps++;
                 });
             return totalOverlaps.ToString();
