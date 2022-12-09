@@ -14,8 +14,6 @@ namespace AdventOfCode2022.Days
         private string[] columns;
         private List<(int move, int source, int dest)> instructions = new();
 
-        
-
         public Day05(int day)
         : base(day)
         {
