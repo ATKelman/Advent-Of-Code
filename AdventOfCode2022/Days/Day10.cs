@@ -25,9 +25,7 @@ namespace AdventOfCode2022.Days
             {
                 IncreaseCycle(ref cycle, ref signalStrength, x);
                     
-                if (input[i] == "noop")
-                    continue;
-                else
+                if (input[i].StartsWith("addx"))
                 {
                     IncreaseCycle(ref cycle, ref signalStrength, x);
 
@@ -57,9 +55,7 @@ namespace AdventOfCode2022.Days
             {
                 IncreaseCycleAndDraw(ref cycle, x);
 
-                if (input[i] == "noop")
-                    continue;
-                else
+                if (input[i].StartsWith("addx"))
                 {
                     IncreaseCycleAndDraw(ref cycle, x);
 
