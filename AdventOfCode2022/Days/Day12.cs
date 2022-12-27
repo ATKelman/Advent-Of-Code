@@ -96,8 +96,6 @@ namespace AdventOfCode2022.Days
             return "Steps taken: " + BFS(start.Key, end.Key);
         }
 
-
-
         public override string SolvePart2()
         {
             // S & a
