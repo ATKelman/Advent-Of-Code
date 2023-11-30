@@ -361,4 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Contains private information, i.e. SessionToken 
 /AdventOfCode2023/appsettings.json
