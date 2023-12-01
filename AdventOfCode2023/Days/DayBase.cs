@@ -10,8 +10,8 @@ public abstract class DayBase : IDay
     private string _session;
     private string _baseUrl;
 
-    private string _inputPath = "";
-    private string _testInputPath = "";
+    protected string _inputPath = "";
+    protected string _testInputPath = "";
 
 
     public DayBase(
