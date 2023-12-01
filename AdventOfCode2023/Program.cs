@@ -18,7 +18,7 @@ try
     var day = new Day1(config, isTest);
     await day.LoadInput();
 
-    Console.WriteLine("Part 1:" + day.SolvePart1());
+    //Console.WriteLine("Part 1:" + day.SolvePart1());
     Console.WriteLine("Part 2:" + day.SolvePart2());
 }
 catch (Exception ex)
