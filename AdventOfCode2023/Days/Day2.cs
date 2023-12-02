@@ -45,6 +45,20 @@ public class Day2 : DayBase
 
     public override string SolvePart2()
     {
-        throw new NotImplementedException();
+        int result = 0;
+
+        input = File.ReadAllLines(_inputPath);
+        foreach (string line in input)
+        {
+            Regex regex = new("(?<amount>\\d{1,2}) (?<colour>red|green|blue)");
+            var cubes = regex.Matches(line);
+            var red = cubes.Where(x => string.Equals(x.Groups["colour"].Value, "red")).Max(y => int.Parse(y.Groups["amount"].Value));
+            var green = cubes.Where(x => string.Equals(x.Groups["colour"].Value, "green")).Max(y => int.Parse(y.Groups["amount"].Value));
+            var blue = cubes.Where(x => string.Equals(x.Groups["colour"].Value, "blue")).Max(y => int.Parse(y.Groups["amount"].Value));
+
+            result += (red * green * blue);
+        }
+
+        return result.ToString();
     }
 }
