@@ -15,7 +15,7 @@ try
     bool isTest = string.Equals(key.ToLower(), "t");
 
     // TODO fix so this is generated
-    var day = new Day2(config, isTest);
+    var day = new Day3(config, isTest);
     await day.LoadInput();
 
     Console.WriteLine("Part 1:" + day.SolvePart1());
