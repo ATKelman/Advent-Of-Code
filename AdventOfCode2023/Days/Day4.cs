@@ -16,7 +16,19 @@ public class Day4 : DayBase
 
     public override string SolvePart1()
     {
-        throw new NotImplementedException();
+        var input = File.ReadAllLines(_inputPath);
+        int points = 0;
+        foreach (var line in input)
+        {
+            var i = line.Split(":", StringSplitOptions.RemoveEmptyEntries)[1];
+            var j = i.Split("|").Select(x => x.Split(" ", StringSplitOptions.RemoveEmptyEntries).ToList().Select(int.Parse));
+
+            var result = j.First().Intersect(j.Last());
+            if (result.Any())
+                points += (int)Math.Pow(2, result.Count() - 1);
+        }
+
+        return points.ToString();
     }
 
     public override string SolvePart2()
