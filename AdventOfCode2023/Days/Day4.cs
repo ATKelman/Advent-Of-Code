@@ -33,6 +33,32 @@ public class Day4 : DayBase
 
     public override string SolvePart2()
     {
-        throw new NotImplementedException();
+        var input = File.ReadAllLines(_inputPath);
+        var cards = Enumerable.Range(0, input.Count())
+            .Select(x => new
+            {
+                Key = x,
+                Value = 1
+            })
+            .ToDictionary(x => x.Key, x => x.Value);
+        for (int i = 0; i < input.Length; i++)
+        {
+            var j = input[i].Split(":", StringSplitOptions.RemoveEmptyEntries)[1];
+            var k = j.Split("|").Select(x => x.Split(" ", StringSplitOptions.RemoveEmptyEntries).ToList().Select(int.Parse));
+
+            var result = k.First().Intersect(k.Last());
+            if (result.Any())
+            {
+                var currentCardCount = cards[i];
+                for (int copies = 1; copies <= result.Count(); copies++)
+                {
+                    var amount = cards[i + copies];
+                    cards[i + copies] = amount + currentCardCount;
+                }
+
+            }
+        }
+
+        return cards.Values.Sum().ToString();
     }
 }
