@@ -85,6 +85,7 @@ public class Day5 : DayBase
                     .Select(y => y.Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(z => long.Parse(z)).ToArray())
             ).ToArray();
 
+        // Dictionary Mapping: Key = Source, Value = Destination 
         Dictionary<Range, Range>[] maps = new Dictionary<Range, Range>[inputs.Count()];
         for (var i = 0; i < inputs.Length; i++)
         {
@@ -96,7 +97,7 @@ public class Day5 : DayBase
                 var source = item[1];
                 var length = item[2];
 
-                map.Add(new Range(source, source + length), new Range(destination, destination + length));
+                map.Add(new Range(source, source + length - 1), new Range(destination, destination + length - 1));
             }
 
             maps[i] = map;
@@ -111,17 +112,7 @@ public class Day5 : DayBase
         List<Range> seedRanges = new();
         for (int i = 0; i < seeds.Length; i += 2)
         {
-            var instanceRange = new Range(seeds[i], seeds[i] + seeds[i + 1] - 1);
-            var intersects = seedRanges.Where(x => Intersects(x, instanceRange)).ToList();
-            if (intersects.Count != 0)
-            {
-                foreach (var intersection in intersects)
-                {
-                    seedRanges.Remove(intersection);
-                    instanceRange = CombineRanges(intersection, instanceRange);
-                }
-            }    
-
+            var instanceRange = new Range(seeds[i], seeds[i] + seeds[i + 1] - 1); 
             seedRanges.Add(instanceRange);
         }
 
@@ -130,38 +121,44 @@ public class Day5 : DayBase
         for (int i = 0; i < maps.Length; i++)
         {
             var map = maps[i];
+            nextMapRanges = new();
 
-            while (r.Count() > 0)
+            while (r.Count > 0)
             {
                 var instance = r[0];
                 r.RemoveAt(0);
 
                 var intersects = map.FirstOrDefault(x => Intersects(instance, x.Key));
+                // No match, keep current range 
                 if (intersects.Key is null)
                     nextMapRanges.Add(instance);
-                else
+                // Intersection contains our entire range
+                // Add matched destination ranges  
+                else if (instance.from >= intersects.Key.from && instance.to <= intersects.Key.to)
                 {
-                    if (instance.from < intersects.Key.from)
-                    {
-                        nextMapRanges.Add(new Range(instance.from, intersects.Key.from - 1));
-                        r.Add(new Range(intersects.Key.from, instance.to));
-                    }
-                    // SHOULD BE KEYS NOT INSTANCE FROM AND TO 
-                    else if (instance.from >= intersects.Key.from && instance.to < intersects.Key.to)
-                    {
-                        nextMapRanges.Add(new Range(instance.from, instance.to));
-                    }
+                    var destination = intersects.Value;
+                    var startingShift = instance.from - intersects.Key.from;
+                    var endingShift = (instance.to - instance.from) + startingShift;
+                    nextMapRanges.Add(new Range(destination.from + startingShift, destination.from + endingShift));
                 }
+                // Intersects on upper portion
+                else if (instance.from < intersects.Key.from)
+                {
+                    r.Add(new Range(instance.from, intersects.Key.from - 1));
+                    r.Add(new Range(intersects.Key.from, instance.to));
+                }
+                // Intersects on lower portion
+                else 
+                {
+                    r.Add(new Range(instance.from, intersects.Key.to));
+                    r.Add(new Range(intersects.Key.to + 1, instance.to));
+                }
+                
             }
-
+            r = nextMapRanges;
         }
 
-        return "";
-    }
-
-    private Range CombineRanges(Range r1, Range r2)
-    {
-        return new Range (long.Min(r1.from, r2.from), long.Max(r1.to, r2.to));
+        return nextMapRanges.Select(x => x.from).Min().ToString();
     }
 
     // r1 start should be lower than r2, while r1 should end within r2
