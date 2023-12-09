@@ -18,29 +18,7 @@ public class Day5 : DayBase
     public override string SolvePart1()
     {
         var input = File.ReadAllText(_inputPath).Split("\n\n", StringSplitOptions.RemoveEmptyEntries);
-        var inputs = input.Skip(1)
-            .Select(x => 
-                x.Split("\n", StringSplitOptions.RemoveEmptyEntries)
-                    .Skip(1)
-                    .Select(y => y.Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(z => long.Parse(z)).ToArray())
-            ).ToArray();
-
-        Dictionary<Range, Range>[] maps = new Dictionary<Range, Range>[inputs.Count()];
-        for (var i = 0; i < inputs.Length; i++)
-        {
-            Dictionary<Range, Range> map = new();
-
-            foreach (var item in inputs[i])
-            {
-                var destination = item[0];
-                var source = item[1];
-                var length = item[2];
-
-                map.Add(new Range(source, source + length), new Range(destination, destination + length));
-            }
-
-            maps[i] = map;
-        }
+        var maps = GetMaps(input);
 
         // Regex?
         var seeds = input[0]
@@ -69,64 +47,34 @@ public class Day5 : DayBase
                 location = instance;
         }
             
-
         return location.ToString();
     }
-
-    record Range(long from, long to);
 
     public override string SolvePart2()
     {
         var input = File.ReadAllText(_inputPath).Split("\n\n", StringSplitOptions.RemoveEmptyEntries);
-        var inputs = input.Skip(1)
-            .Select(x =>
-                x.Split("\n", StringSplitOptions.RemoveEmptyEntries)
-                    .Skip(1)
-                    .Select(y => y.Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(z => long.Parse(z)).ToArray())
-            ).ToArray();
+        var maps = GetMaps(input);
 
-        // Dictionary Mapping: Key = Source, Value = Destination 
-        Dictionary<Range, Range>[] maps = new Dictionary<Range, Range>[inputs.Count()];
-        for (var i = 0; i < inputs.Length; i++)
-        {
-            Dictionary<Range, Range> map = new();
-
-            foreach (var item in inputs[i])
-            {
-                var destination = item[0];
-                var source = item[1];
-                var length = item[2];
-
-                map.Add(new Range(source, source + length - 1), new Range(destination, destination + length - 1));
-            }
-
-            maps[i] = map;
-        }
-
-        var seeds = input[0]
+        var seedRanges = input[0]
             .Split(":")[1]
             .Split(" ", StringSplitOptions.RemoveEmptyEntries)
             .Select(long.Parse)
-            .ToArray();
+            .ToArray()
+            .Chunk(2)
+            .Select(x => new Range(x[0], x[0] + x[1] - 1))
+            .ToList();
 
-        List<Range> seedRanges = new();
-        for (int i = 0; i < seeds.Length; i += 2)
-        {
-            var instanceRange = new Range(seeds[i], seeds[i] + seeds[i + 1] - 1); 
-            seedRanges.Add(instanceRange);
-        }
-
-        List<Range> r = seedRanges;
+        List<Range> queue = seedRanges;
         List<Range> nextMapRanges = new();
         for (int i = 0; i < maps.Length; i++)
         {
             var map = maps[i];
             nextMapRanges = new();
 
-            while (r.Count > 0)
+            while (queue.Count > 0)
             {
-                var instance = r[0];
-                r.RemoveAt(0);
+                var instance = queue[0];
+                queue.RemoveAt(0);
 
                 var intersects = map.FirstOrDefault(x => Intersects(instance, x.Key));
                 // No match, keep current range 
@@ -144,21 +92,54 @@ public class Day5 : DayBase
                 // Intersects on upper portion
                 else if (instance.from < intersects.Key.from)
                 {
-                    r.Add(new Range(instance.from, intersects.Key.from - 1));
-                    r.Add(new Range(intersects.Key.from, instance.to));
+                    queue.Add(new Range(instance.from, intersects.Key.from - 1));
+                    queue.Add(new Range(intersects.Key.from, instance.to));
                 }
                 // Intersects on lower portion
                 else 
                 {
-                    r.Add(new Range(instance.from, intersects.Key.to));
-                    r.Add(new Range(intersects.Key.to + 1, instance.to));
+                    queue.Add(new Range(instance.from, intersects.Key.to));
+                    queue.Add(new Range(intersects.Key.to + 1, instance.to));
                 }
                 
             }
-            r = nextMapRanges;
+            queue = nextMapRanges;
         }
 
         return nextMapRanges.Select(x => x.from).Min().ToString();
+    }
+
+    record Range(long from, long to);
+
+    private Dictionary<Range, Range>[] GetMaps(string[] input)
+    {
+        var inputs = input.Skip(1)
+            .Select(x =>
+                x.Split("\n", StringSplitOptions.RemoveEmptyEntries)
+                    .Skip(1)
+                    .Select(y => y.Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(z => long.Parse(z)).ToArray())
+            ).ToArray();
+
+        // Dictionary Mapping:
+        // Key = Source
+        // Value = Destination 
+        Dictionary<Range, Range>[] maps = new Dictionary<Range, Range>[inputs.Count()];
+        for (var i = 0; i < inputs.Length; i++)
+        {
+            Dictionary<Range, Range> map = new();
+
+            foreach (var item in inputs[i])
+            {
+                var destination = item[0];
+                var source = item[1];
+                var length = item[2];
+
+                map.Add(new Range(source, source + length - 1), new Range(destination, destination + length - 1));
+            }
+
+            maps[i] = map;
+        }
+        return maps;
     }
 
     // r1 start should be lower than r2, while r1 should end within r2
