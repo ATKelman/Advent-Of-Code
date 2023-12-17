@@ -17,8 +17,8 @@ public class Day10 : DayBase
 
         (int x, int y) start = (0, 0);
         var grid = new char[input.Count(), input[0].Count()];
-        for (int x = 0; x < input.Count(); x++)
-            for (int y = 0; y < input[x].Count(); y++)
+        for (int y = 0; y < input.Count(); y++)
+            for (int x = 0; x < input[y].Count(); x++)
             {
                 grid[x, y] = input[y][x];
                 if (grid[x, y] == 'S')
@@ -35,9 +35,11 @@ public class Day10 : DayBase
                     continue;
                 var dx = x + start.x;
                 var dy = y + start.y;
-                if (grid[dx, dy] == '.')
-                    continue;
-                var connections = GetConnections(grid, grid[dx, dy], dx, dy);
+
+                if (dx < 0 || dx >= input.Count() || dy < 0 || dy >= input.Count()) continue;
+                if (grid[dx, dy] == '.') continue;
+
+                var connections = GetConnections(grid[dx, dy], dx, dy);
                 if (connections.first == start || connections.second == start)
                 {
                     queued.Enqueue((dx, dy));
@@ -48,9 +50,11 @@ public class Day10 : DayBase
         while (queued.Count() > 0)
         {
             var current = queued.Dequeue();
+            if (passed.Contains(current)) continue;
+
             passed.Add(current);
 
-            var connections = GetConnections(grid, grid[current.x, current.y], current.x, current.y);
+            var connections = GetConnections(grid[current.x, current.y], current.x, current.y);
             if (!passed.Contains(connections.first))
                 queued.Enqueue(connections.first);
             if (!passed.Contains(connections.second))
@@ -65,16 +69,16 @@ public class Day10 : DayBase
         throw new NotImplementedException();
     }
 
-    private ((int x, int y) first, (int x, int y) second) GetConnections(char[,] grid, char pipe, int x, int y)
+    private ((int x, int y) first, (int x, int y) second) GetConnections(char pipe, int x, int y)
     {
         return pipe switch
         {
-            '|' => ((x, y + 1), (x, y - 1)),
+            '|' => ((x, y - 1), (x, y + 1)),
             '-' => ((x - 1, y), (x + 1, y)),
-            'L' => ((x, y + 1), (x + 1, y)),
-            'J' => ((x - 1, y), (x, y + 1)),
-            '7' => ((x - 1, y), (x, y - 1)),
-            'F' => ((x + 1, y), (x, y - 1)),
+            'L' => ((x, y - 1), (x + 1, y)),
+            'J' => ((x - 1, y), (x, y - 1)),
+            '7' => ((x - 1, y), (x, y + 1)),
+            'F' => ((x + 1, y), (x, y + 1)),
             _ => throw new Exception("Outside loop")
         };
     }
