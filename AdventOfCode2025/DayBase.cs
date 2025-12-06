@@ -68,17 +68,13 @@ public abstract class DayBase : IDay
 
     public async Task LoadInputAsync()
     {
-        if (File.Exists(_inputPath))
+        if (!File.Exists(_inputPath))
         {
-            InputText = await File.ReadAllTextAsync(_inputPath);
-            InputLines = await File.ReadAllLinesAsync(_inputPath);
-            return;
-        }
-
-        await DownloadInputAsync();
+			await DownloadInputAsync();
+		}
 
         InputText = await File.ReadAllTextAsync(_inputPath);
-        InputLines = await File.ReadAllLinesAsync(_inputPath);
+        InputLines = [.. (await File.ReadAllLinesAsync(_inputPath)).Where(line => !string.IsNullOrWhiteSpace(line))];
     }
 
     private async Task DownloadInputAsync()
