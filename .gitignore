@@ -364,3 +364,4 @@ FodyWeavers.xsd
 
 # Contains private information, i.e. SessionToken 
 /AdventOfCode2023/appsettings.json
+/AdventOfCode2025/appsettings.json
