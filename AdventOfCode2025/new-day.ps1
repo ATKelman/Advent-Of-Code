@@ -31,7 +31,6 @@ if ($DayNumber -lt $minDay -or $DayNumber -gt $maxDay) {
 }
 
 $dayFile = "Days\Day$DayNumber.cs"
-$inputFile = "Inputs\Day$DayNumber.txt"
 
 if (Test-Path $dayFile) {
     Write-Host "Error: $dayFile already exists!" -ForegroundColor Red
@@ -40,9 +39,6 @@ if (Test-Path $dayFile) {
 
 if (-not (Test-Path "Days")) {
     New-Item -ItemType Directory -Path "Days" | Out-Null
-}
-if (-not (Test-Path "Inputs")) {
-    New-Item -ItemType Directory -Path "Inputs" | Out-Null
 }
 
 $template = @"
@@ -71,14 +67,10 @@ Set-Content -Path $dayFile -Value $template -Encoding UTF8
 
 Write-Host "Created: $dayFile" -ForegroundColor Green
 
-if (-not (Test-Path $inputFile)) {
-    New-Item -ItemType File -Path $inputFile | Out-Null
-    Write-Host "Created: $inputFile" -ForegroundColor Green
-}
 
 Write-Host ""
 Write-Host "Day $DayNumber Setup!" -ForegroundColor Yellow
 Write-Host ""
 Write-Host "Next steps:" -ForegroundColor Cyan
-Write-Host "  1. Input will be auto-downloaded on first run, or paste it into: $inputFile"
+Write-Host "  1. Input will be auto-created and downloaded on first run"
 Write-Host "  2. Run with: dotnet run -- $DayNumber"
