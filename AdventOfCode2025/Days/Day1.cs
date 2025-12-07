@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Configuration;
-using System.Xml.Schema;
 
 namespace AdventOfCode2025.Days;
 
@@ -48,7 +47,7 @@ public class Day1(IConfiguration config)
 
 	private static int CountZeros(int startPos, int movement)
 	{
-		if (movement == 0) 
+		if (movement == 0)
 			return 0;
 
 		int absMovement = Math.Abs(movement);
@@ -56,14 +55,14 @@ public class Day1(IConfiguration config)
 
 		if (movement > 0)
 			startPos = (100 - startPos);
-			
+
 		distanceToZero = startPos % 100;
 
-		if (distanceToZero == 0) 
+		if (distanceToZero == 0)
 			distanceToZero = 100;
 
 		if (absMovement < distanceToZero)
-			return 0; 
+			return 0;
 
 		return 1 + (absMovement - distanceToZero) / 100;
 	}
