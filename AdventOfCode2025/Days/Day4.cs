@@ -2,53 +2,135 @@ using Microsoft.Extensions.Configuration;
 
 namespace AdventOfCode2025.Days;
 
-public class Day4 (IConfiguration config)
-    : DayBase(config)
+public class Day4(IConfiguration config)
+	: DayBase(config)
 {
-    public override string SolvePart1()
-    {
-        Dictionary<(int X, int Y), int> maps = [];
+	public override string SolvePart1()
+	{
+		Dictionary<(int X, int Y), int> maps = [];
 
-        for (int y = 0; y < InputLines.Length; y++)
-        {
-            string line = InputLines[y];
-            for (int x = 0; x < line.Length; x++)
-            {
-                if (line[x] == '@')
-                {
-					maps.TryAdd((x, y), 0);
-					for (int i = -1; i <= 1; i++)
-                    {
-                        for (int j = -1; j <= 1; j++)
-                        {
-                            if (i == j && i == 0) 
-                                continue;
+		for (int y = 0; y < InputLines.Length; y++)
+		{
+			string line = InputLines[y];
+			for (int x = 0; x < line.Length; x++)
+			{
+				if (line[x] != '@')
+					continue;
 
-                            var dx = x + i;
-                            var dy = y + j;
+				maps.TryAdd((x, y), 0);
+				for (int i = -1; i <= 1; i++)
+				{
+					for (int j = -1; j <= 1; j++)
+					{
+						if (i == j && i == 0)
+							continue;
 
-                            if (dx < 0 || dx >= line.Length
-                                || dy < 0 || dy >= InputLines.Count())
-                                continue;
+						var dx = x + i;
+						var dy = y + j;
 
-                            if (InputLines[dy][dx] != '@')
-                                continue;
+						if (dx < 0 || dx >= line.Length
+							|| dy < 0 || dy >= InputLines.Length)
+							continue;
 
-                            maps[(dx, dy)] = maps.GetValueOrDefault((dx, dy)) + 1;
-                        }
-                    }
-                }
-            }
+						if (InputLines[dy][dx] != '@')
+							continue;
+
+						maps[(dx, dy)] = maps.GetValueOrDefault((dx, dy)) + 1;
+					}
+				}
+			}
 		}
 
-        return maps.Where(x => x.Value < 4).Count().ToString();
-    }
+		return maps
+			.Where(x => x.Value < 4)
+			.Count()
+			.ToString();
+	}
 
-    public override string SolvePart2()
-    {
-        // TODO: Implement Part 2
-        return "Not implemented";
-    }
+	public override string SolvePart2()
+	{
+		int removedRolls = 0;
+		Dictionary<(int X, int Y), Node> map = [];
 
-    private record Map(int X, int Y, char Value, int AdjacentPaper);
+		for (int y = 0; y < InputLines.Length; y++)
+		{
+			string line = InputLines[y];
+			for (int x = 0; x < line.Length; x++)
+			{
+				char c = line[x];
+				if (c != '@')
+					continue;
+				Node instance = new(x, y, c);
+				map.TryAdd((x, y), instance);
+
+				for (int i = -1; i <= 1; i++)
+				{
+					for (int j = -1; j <= 1; j++)
+					{
+						if (i == j && i == 0)
+							continue;
+
+						var dx = x + i;
+						var dy = y + j;
+
+						if (dx < 0 || dx >= line.Length
+							|| dy < 0 || dy >= InputLines.Length)
+							continue;
+
+						if (InputLines[dy][dx] != '@')
+							continue;
+
+						map[(dx, dy)] = map.GetValueOrDefault((dx, dy)) ?? new Node(dx, dy, '@');
+						map[(dx, dy)].Neighbours.Add(instance);
+						instance.Neighbours.Add(map[(dx, dy)]);
+					}
+				}
+			}
+		}
+
+		while (map.Any(x => x.Value.AdjacentRolls < 4))
+		{
+			var nodesToRemove = map.Where(x => x.Value.AdjacentRolls < 4).ToList();
+			removedRolls += nodesToRemove.Count;
+			for(int i = 0; i < nodesToRemove.Count; i++)
+			{
+				var instance = nodesToRemove[i];
+				map.Remove(instance.Key);
+
+				var neighbours = map.Where(x => x.Value.Neighbours.Contains(instance.Value));
+				foreach (var neighbour in neighbours)
+				{
+					neighbour.Value.Neighbours.Remove(instance.Value);
+				}
+			}
+		}
+
+		return removedRolls.ToString();
+	}
+
+	private class Node
+	{
+		public int X;
+		public int Y;
+		public char Value;
+		public HashSet<Node> Neighbours = [];
+		public int AdjacentRolls => Neighbours.Where(n => n.Value == '@').Count();
+
+		public Node(int x, int y, char value)
+		{
+			X = x;
+			Y = y;
+			Value = value;
+		}
+
+		public override bool Equals(object? obj)
+		{
+			return obj is Node node && X == node.X && Y == node.Y;
+		}
+
+		public override int GetHashCode()
+		{
+			return HashCode.Combine(X, Y);
+		}
+	}
 }
