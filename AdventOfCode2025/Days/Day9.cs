@@ -29,9 +29,9 @@ public class Day9(IConfiguration config)
 	public override string SolvePart2()
 	{
 		var redTiles = InputLines
-		.Select(x => x.Split(",").Select(long.Parse).ToArray())
-		.Select(x => new Point(x[0], x[1]))
-		.ToArray();
+			.Select(x => x.Split(",").Select(long.Parse).ToArray())
+			.Select(x => new Point(x[0], x[1]))
+			.ToArray();
 
 		HashSet<Point> redSet = [.. redTiles];
 		HashSet<Point> greenTiles = [.. redSet];
